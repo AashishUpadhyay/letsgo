@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	loopcollection()
+	panicexample()
 }
 
 func loop() {
@@ -70,4 +71,28 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	f, _ := os.Open("./menu.txt")
 	io.Copy(w, f)
+}
+
+func deferfunctions() {
+	// defer follows first in last out
+	db, _ := sql.Open("drivrName", "connectionStrint")
+	defer db.Close()
+
+	rows, _ := db.Query("some query!")
+	defer rows.Close()
+}
+
+func panicexample() {
+	fmt.Printf("%d divide by %d is equal to %d\n", 10, 2, divide(10, 2))
+	fmt.Printf("%d divide by %d is equal to %d\n", 10, 0, divide(10, 0))
+}
+
+func divide(dividend int, divisor int) int {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+		}
+	}()
+	x := dividend / divisor
+	return x
 }
