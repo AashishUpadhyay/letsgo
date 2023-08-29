@@ -16,7 +16,7 @@ import (
 var in = bufio.NewReader(os.Stdin)
 
 func main() {
-	useinterfaces()
+	generics()
 }
 
 func loop() {
@@ -159,4 +159,35 @@ func useinterfaces() {
 	default:
 		fmt.Println("I am not sure!")
 	}
+}
+
+func generics() {
+	var flt = []float64{10.5, 6.9, 129.9}
+	var clonedFlt = clone(flt)
+	fmt.Println(&flt[0], &clonedFlt[0], clonedFlt)
+
+	testScores := map[string]float64{
+		"Harry":    99,
+		"Hermoine": 100,
+	}
+
+	clonedTestScores := cloneMap(testScores)
+
+	fmt.Println(clonedTestScores)
+}
+
+func clone[V any](s []V) []V {
+	result := make([]V, len(s))
+	for i, v := range s {
+		result[i] = v
+	}
+	return result
+}
+
+func cloneMap[K comparable, V any](m map[K]V) map[K]V {
+	result := make(map[K]V, len(m))
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
 }
