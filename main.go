@@ -174,6 +174,17 @@ func generics() {
 	clonedTestScores := cloneMap(testScores)
 
 	fmt.Println(clonedTestScores)
+
+	int_arr := []int{1, 2, 3}
+	flt_arr := []float64{1.2, 2.3, 3.4}
+	str_arr := []string{"A", "B", "C"}
+
+	int_arr_sum := add(int_arr)
+	flt_arr_sum := add(flt_arr)
+	str_arr_sum := add(str_arr)
+	fmt.Printf("Sum of %v : %v \n", int_arr, int_arr_sum)
+	fmt.Printf("Sum of %v : %v \n", flt_arr, flt_arr_sum)
+	fmt.Printf("Sum of %v : %v \n", str_arr, str_arr_sum)
 }
 
 func clone[V any](s []V) []V {
@@ -188,6 +199,18 @@ func cloneMap[K comparable, V any](m map[K]V) map[K]V {
 	result := make(map[K]V, len(m))
 	for k, v := range m {
 		result[k] = v
+	}
+	return result
+}
+
+type addable interface {
+	int | float64 | string
+}
+
+func add[V addable](s []V) V {
+	var result V
+	for _, v := range s {
+		result += v
 	}
 	return result
 }
