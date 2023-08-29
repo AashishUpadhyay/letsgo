@@ -1,17 +1,21 @@
 package main
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
+
+	"demo/menu"
 )
 
+var in = bufio.NewReader(os.Stdin)
+
 func main() {
-	panicexample()
+	loopcollection()
 }
 
 func loop() {
@@ -35,29 +39,35 @@ func loop() {
 }
 
 func loopcollection() {
+loop:
+	for {
+		fmt.Println("Please select an option")
+		fmt.Println("1) print menu")
+		fmt.Println("2) add item")
+		fmt.Println("3) quit")
+
+		choice, _ := in.ReadString('\n')
+
+		switch strings.TrimSpace(choice) {
+		case "1":
+			menu.Print()
+		case "2":
+			menu.Add()
+		case "q":
+			break loop
+		default:
+			fmt.Println("Unknown option")
+		}
+	}
+
+}
+
+func loopArr() {
 	arr := [3]int{101, 102, 103}
 	for i, v := range arr {
 		fmt.Println(i, v)
 	}
 	fmt.Println("Done!")
-
-	type menuItem struct {
-		name   string
-		prices map[string]float64
-	}
-
-	menu := []menuItem{
-		{name: "Caramel Machiato", prices: map[string]float64{"small": 1.65, "medium": 1.95, "large": 2.15}},
-		{name: "Penne Pollo", prices: map[string]float64{"half": 5.65, "full": 10.95, "double": 20.15}},
-	}
-
-	for _, item := range menu {
-		fmt.Println(item.name)
-		fmt.Println(strings.Repeat("-", 10))
-		for size, price := range item.prices {
-			fmt.Println(size + "-" + strconv.FormatFloat(price, 'E', -1, 64))
-		}
-	}
 }
 
 func webapp() {
