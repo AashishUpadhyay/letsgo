@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"database/sql"
 	"fmt"
 	"io"
@@ -15,7 +16,7 @@ import (
 var in = bufio.NewReader(os.Stdin)
 
 func main() {
-	loopcollection()
+	useinterfaces()
 }
 
 func loop() {
@@ -105,4 +106,57 @@ func divide(dividend int, divisor int) int {
 	}()
 	x := dividend / divisor
 	return x
+}
+
+type printer interface {
+	Print() string
+}
+
+type user struct {
+	username string
+	id       int
+}
+
+func (u user) Print() string {
+	return fmt.Sprintf("%v [%v]\n", u.username, u.id)
+}
+
+type menuItemV2 struct {
+	name   string
+	prices map[string]float64
+}
+
+func (mi menuItemV2) Print() string {
+	var b bytes.Buffer
+	b.WriteString(mi.name + "\n")
+	b.WriteString(strings.Repeat("-", 10) + "\n")
+	for size, cost := range mi.prices {
+		fmt.Fprint(&b, "\t%10s%10.2f\n", size, cost)
+	}
+	return b.String()
+}
+
+func useinterfaces() {
+	var p printer
+	p = user{username: "Aashish", id: 42}
+	fmt.Println(p.Print())
+
+	p = menuItemV2{name: "Caramel Machiato",
+		prices: map[string]float64{"small": 1.65, "medium": 1.95, "large": 2.15}}
+
+	fmt.Println(p.Print())
+
+	u, ok := p.(user)
+	fmt.Println(u, ok)
+	mi, ok := p.(menuItemV2)
+	fmt.Println(mi, ok)
+
+	switch v := p.(type) {
+	case user:
+		fmt.Println("Found a user", v)
+	case menuItemV2:
+		fmt.Println("Found a menuItemV2", v)
+	default:
+		fmt.Println("I am not sure!")
+	}
 }
