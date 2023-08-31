@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"demo/menu"
 )
@@ -16,7 +17,7 @@ import (
 var in = bufio.NewReader(os.Stdin)
 
 func main() {
-	concurrency_channels()
+	concurrency_select_statements()
 }
 
 func loop() {
@@ -262,4 +263,27 @@ func concurrency_channels() {
 	}()
 
 	wg.Wait()
+}
+
+func concurrency_select_statements() {
+	ch1, ch2 := make(chan string), make(chan string)
+
+	go func() {
+		ch1 <- "message1"
+	}()
+
+	go func() {
+		ch2 <- "message2"
+	}()
+	for i := 0; i < 4; i++ {
+		select {
+		case x := <-ch1:
+			fmt.Println(x)
+		case y := <-ch2:
+			fmt.Println(y)
+		default:
+			fmt.Println("nothing is there to receive!")
+		}
+		time.Sleep(1000 * time.Millisecond)
+	}
 }
