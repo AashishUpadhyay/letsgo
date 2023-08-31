@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"database/sql"
 	"fmt"
 	"io"
@@ -16,7 +15,7 @@ import (
 var in = bufio.NewReader(os.Stdin)
 
 func main() {
-	generics()
+	loopcollection()
 }
 
 func loop() {
@@ -40,27 +39,47 @@ func loop() {
 }
 
 func loopcollection() {
-loop:
 	for {
 		fmt.Println("Please select an option")
 		fmt.Println("1) print menu")
 		fmt.Println("2) add item")
-		fmt.Println("3) quit")
+		fmt.Println("q) quit")
 
 		choice, _ := in.ReadString('\n')
+		choice = strings.TrimSpace(choice)
+		itemname := ""
 
-		switch strings.TrimSpace(choice) {
-		case "1":
-			menu.Print()
-		case "2":
-			menu.Add()
-		case "q":
-			break loop
-		default:
-			fmt.Println("Unknown option")
+		if choice == "2" {
+			fmt.Println("Please enter the name of the new item")
+			itemname, _ = in.ReadString('\n')
+			itemname = strings.TrimSpace(itemname)
+		}
+
+		exit := menu_options(choice, itemname)
+
+		if exit {
+			break
 		}
 	}
 
+}
+
+func menu_options(choice string, itemname string) bool {
+	switch strings.TrimSpace(choice) {
+	case "1":
+		menu.Print()
+	case "2":
+		err := menu.Add(itemname)
+		if err != nil {
+			fmt.Println(fmt.Errorf("invalid item: %w", err).Error())
+			return true
+		}
+	case "q":
+		return true
+	default:
+		fmt.Println("Unknown option")
+	}
+	return false
 }
 
 func loopArr() {
@@ -127,13 +146,12 @@ type menuItemV2 struct {
 }
 
 func (mi menuItemV2) Print() string {
-	var b bytes.Buffer
-	b.WriteString(mi.name + "\n")
-	b.WriteString(strings.Repeat("-", 10) + "\n")
+	fmt.Println(mi.name)
+	fmt.Println(strings.Repeat("-", 10) + "\n")
 	for size, cost := range mi.prices {
-		fmt.Fprint(&b, "\t%10s%10.2f\n", size, cost)
+		fmt.Println(size, cost)
 	}
-	return b.String()
+	return mi.name
 }
 
 func useinterfaces() {
