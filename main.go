@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"demo/menu"
 )
@@ -15,7 +16,7 @@ import (
 var in = bufio.NewReader(os.Stdin)
 
 func main() {
-	loopcollection()
+	concurrency_channels()
 }
 
 func loop() {
@@ -231,4 +232,34 @@ func add[V addable](s []V) V {
 		result += v
 	}
 	return result
+}
+
+func concurrency() {
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		fmt.Println("Asynchronous!")
+		wg.Done()
+	}()
+
+	fmt.Println("Synchronous!")
+	wg.Wait()
+}
+
+func concurrency_channels() {
+	var wg sync.WaitGroup
+	channel := make(chan string)
+
+	wg.Add(1)
+	go func() {
+		channel <- "message"
+	}()
+
+	go func() {
+		fmt.Println(<-channel)
+		wg.Done()
+	}()
+
+	wg.Wait()
 }
